@@ -1,0 +1,121 @@
+﻿@model DemoWebApplication.Models.BooksViewModel
+@{
+    ViewBag.Title = "SearchBook";
+}
+<head>
+    <script src="~/Scripts/jquery-3.6.0.js"></script>
+</head>
+<h2>SearchBook</h2>
+
+<div class="table">
+    Select Search Criteria for Find Books
+</div>
+<form id="searchForm" method="post">
+    <table class="table">
+        <thead>
+            @{
+                <b>Book Name :</b>
+                @Html.TextBoxFor(model => model.BookName, null, new { @id = "BookName" })
+                <b>Select Cateogry :</b>
+                @Html.DropDownListFor(model => model.BookCategoryId, new SelectList(Model.BooksCategoriesList, "BookCategoryId", "BookCategoryName"), "Select Cateogry", new { @id = "BookCategoryId" })
+                <b>Select Publication :</b>
+                @Html.DropDownListFor(model => model.BookPublisherId, new SelectList(Model.BooksPublicationsList, "BookPublisherId", "BookPublisherName"), "Select Publisher", new { @id = "BookPublisherId" })
+                <br>
+                <br>
+                <b>Page Number : </b>
+                @Html.TextBoxFor(model => model.PageNumber, null, new { @id = "PageNumber" })
+                <b>Page Size : </b>
+                @Html.TextBoxFor(model => model.PageSize, null, new { @id = "PageSize" })
+
+                <input id="submitBtn" type="button" value="Search" class="btn btn-success" onclick="SearchBtnClick()" />
+
+                <input id="ResetBtn" type="reset" value="reset" class="btn btn-danger" onclick=" this.form.reset()" />
+            }
+        </thead>
+    </table>
+    <br />
+
+
+    <div>
+        <table class="table">
+            <tr>
+                <th> Book ID</th>
+                <th> Book Name</th>
+                <th> Book Publication</th>
+                <th> Book Cateogry</th>
+                <th> Book Quantity</th>
+            </tr>
+            <tbody id="SearchedData">
+            </tbody>
+        </table>
+    </div>
+
+<ul id="paging" class="pagination">
+
+</ul>
+</form>
+
+<script>
+    function SearchBtnClick() {
+        
+        $('#SearchedData').html("");
+        console.log(" value of div pg : " + $('#paging').val());
+        console.log(" value of div li : " + $('#xyz').val());
+        $.ajax({
+
+            url: "/Books/SearchBook",
+            method: "POST",
+            data: $("#searchForm").serialize(),
+
+            success: function (data) {
+                var bookData = '';
+                var tem = '';
+                $.each(data.BooksList, function (key, value) {
+                    bookData += '<tr>';
+                    bookData += '<td>' + value.BookId + '</td>';
+                    bookData += '<td>' + value.BookName + '</td>';
+                    bookData += '<td>' + value.BookPublisherName + '</td>';
+                    bookData += '<td>' + value.BookCategoryName + '</td>';
+                    bookData += '<td>' + value.BookQuantity + '</td>';
+                });
+                $('#SearchedData').append(bookData);
+
+                var totalPages;
+                
+                if (data.PageSize > 0) {
+                    totalPages = Math.ceil(data.TotalRecords / data.PageSize);
+                } else {
+                    totalPages = Math.ceil(data.TotalRecords / 10);
+                }
+
+                //console.log(totalPages + " & " + data.TotalRecords + " & " + data.PageSize);
+
+                for (var i = 1; i <= totalPages; i++) {
+                    tem += '<li id="xyz" class="pagination" onclick="SearchBtnClick()">' + i +'</li>';
+                }
+                $('#paging').html(tem)
+            },
+
+            error: function (err) {
+                alert("In Fail " + err);
+                console.error("In Fail " + err);
+            }
+        })
+    }
+
+
+    function v(BookName, BookCategoryId, BookPublisherId, PageNumber, PageSize) {
+        $.ajax({
+
+            url: "/Books/SearchBook",
+            method: "POST",
+            data: {
+                BookName: BookName,
+                BookCategoryId: BookCategoryId,
+                BookPublisherId: BookPublisherId,
+                PageNumber: PageNumber,
+                PageSize: PageSize
+            }
+        })
+    }
+</script>

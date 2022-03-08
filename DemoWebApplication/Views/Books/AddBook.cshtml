@@ -1,0 +1,21 @@
+﻿@*@model Books*@
+@model DemoWebApplication.Models.BooksViewModel
+@{
+    ViewBag.Title = "Add Book";
+}
+
+<h2>View</h2>
+
+
+
+<div class="active">
+    <b>Book Name : </b><input id="BookName" type="text" required /> <br /> <br />
+    <b>Select Cateogry :</b>
+    @Html.DropDownListFor(model => model.BookCategoryId, new SelectList(Model.BooksCategoriesList, "BookCategoryId", "BookCategoryName"), "Select Cateogry", new { @class = "for-control" }) <br /> <br />
+    <b>Select Publication :</b>
+    @Html.DropDownListFor(model => model.BookPublisherId, new SelectList(Model.BooksPublicationsList, "BookPublisherId", "BookPublisherName"), "Select Publisher", new { @class = "for-control" }) <br /> <br />
+    <b>Book Quantity :</b> <input id="BookQuantity" type="text" /> <br /> <br />
+    <input id="Submit1" type="submit" value="submit" />
+
+</div>
+
