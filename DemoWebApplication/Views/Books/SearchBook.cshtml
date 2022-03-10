@@ -7,115 +7,137 @@
 </head>
 <h2>SearchBook</h2>
 
-<div class="table">
+<label class="text-success">
     Select Search Criteria for Find Books
+</label>
+<div class="container">
+    <form id="searchForm" class="form-inline" method="post">
+        @{
+            @Html.TextBoxFor(model => model.BookName, null, new { @class = "form-control", @placeholder = "Enter Book Name " })
+
+            @Html.DropDownListFor(model => model.BookCategoryId, new SelectList(Model.BooksCategoriesList, "BookCategoryId", "BookCategoryName"), "Select Cateogry", new { @class = "form-control" })
+
+            @Html.DropDownListFor(model => model.BookPublisherId, new SelectList(Model.BooksPublicationsList, "BookPublisherId", "BookPublisherName"), "Select Publisher", new { @class = "form-control" })
+
+            @Html.Hidden("PageNumber", 1, new { })
+
+            <input id="submitBtn" type="button" value="Search" class="btn btn-success" />
+
+            <input id="resetBtn" type="reset" value="Clear Form" class="btn btn-danger"/>
+            <br />
+            <br />
+            <b class="text-info">Page Size : </b>
+            @Html.DropDownList("PageSize", new List<SelectListItem> { new SelectListItem { Text = "3", Value = "3" }, new SelectListItem { Text = "5", Value = "5" }, new SelectListItem { Text = "10", Value = "10" } }, new { @class = "form-control" })
+    
+            <br />
+        }
+
+        <br />
+
+        <label id="msg" style="color:dodgerblue"> </label>
+
+        <div>
+            <table class="table">
+                <tr>
+                    <th> Book ID</th>
+                    <th> Book Name</th>
+                    <th> Book Publication</th>
+                    <th> Book Cateogry</th>
+                    <th> Book Quantity</th>
+                </tr>
+                <tbody id="SearchedData">
+                </tbody>
+            </table>
+        </div>
+
+        <ul id="paging" class="pagination">
+        </ul>
+    </form>
 </div>
-<form id="searchForm" method="post">
-    <table class="table">
-        <thead>
-            @{
-                <b>Book Name :</b>
-                @Html.TextBoxFor(model => model.BookName, null, new { @id = "BookName" })
-                <b>Select Cateogry :</b>
-                @Html.DropDownListFor(model => model.BookCategoryId, new SelectList(Model.BooksCategoriesList, "BookCategoryId", "BookCategoryName"), "Select Cateogry", new { @id = "BookCategoryId" })
-                <b>Select Publication :</b>
-                @Html.DropDownListFor(model => model.BookPublisherId, new SelectList(Model.BooksPublicationsList, "BookPublisherId", "BookPublisherName"), "Select Publisher", new { @id = "BookPublisherId" })
-                <br>
-                <br>
-                <b>Page Number : </b>
-                @Html.TextBoxFor(model => model.PageNumber, null, new { @id = "PageNumber" })
-                <b>Page Size : </b>
-                @Html.TextBoxFor(model => model.PageSize, null, new { @id = "PageSize" })
-
-                <input id="submitBtn" type="button" value="Search" class="btn btn-success" onclick="SearchBtnClick()" />
-
-                <input id="ResetBtn" type="reset" value="reset" class="btn btn-danger" onclick=" this.form.reset()" />
-            }
-        </thead>
-    </table>
-    <br />
-
-
-    <div>
-        <table class="table">
-            <tr>
-                <th> Book ID</th>
-                <th> Book Name</th>
-                <th> Book Publication</th>
-                <th> Book Cateogry</th>
-                <th> Book Quantity</th>
-            </tr>
-            <tbody id="SearchedData">
-            </tbody>
-        </table>
-    </div>
-
-<ul id="paging" class="pagination">
-
-</ul>
-</form>
 
 <script>
-    function SearchBtnClick() {
-        
-        $('#SearchedData').html("");
-        console.log(" value of div pg : " + $('#paging').val());
-        console.log(" value of div li : " + $('#xyz').val());
-        $.ajax({
+    $(document).ready(function () {
 
-            url: "/Books/SearchBook",
-            method: "POST",
-            data: $("#searchForm").serialize(),
+        SearchBtnClick();
 
-            success: function (data) {
-                var bookData = '';
-                var tem = '';
-                $.each(data.BooksList, function (key, value) {
-                    bookData += '<tr>';
-                    bookData += '<td>' + value.BookId + '</td>';
-                    bookData += '<td>' + value.BookName + '</td>';
-                    bookData += '<td>' + value.BookPublisherName + '</td>';
-                    bookData += '<td>' + value.BookCategoryName + '</td>';
-                    bookData += '<td>' + value.BookQuantity + '</td>';
-                });
-                $('#SearchedData').append(bookData);
+        $("#submitBtn").click(function () {
+            SearchBtnClick();
+        });
 
-                var totalPages;
-                
-                if (data.PageSize > 0) {
-                    totalPages = Math.ceil(data.TotalRecords / data.PageSize);
-                } else {
-                    totalPages = Math.ceil(data.TotalRecords / 10);
+        $("body").on("click", "#SelectedPage", function () {
+            $("#PageNumber").val($(this).text());
+            SearchBtnClick();
+        });
+
+        $("#PageSize").change(function () {
+            $("#PageNumber").val(1);
+            SearchBtnClick();
+        });
+
+        $("#resetBtn").click(function () {
+            this.form.reset();
+            SearchBtnClick();
+        });
+
+        function SearchBtnClick(PgNumber) {
+            $('#SearchedData').html("");
+
+            $.ajax({
+
+                url: "/Books/SearchBook",
+                method: "POST",
+                data: $("#searchForm").serialize(),
+
+                success: function (data) {
+                    var bookData = '';
+                    var tem = '';
+                    $.each(data.BooksList, function (key, value) {
+                        bookData += '<tr>';
+                        bookData += '<td>' + value.BookId + '</td>';
+                        bookData += '<td>' + value.BookName + '</td>';
+                        bookData += '<td>' + value.BookPublisherName + '</td>';
+                        bookData += '<td>' + value.BookCategoryName + '</td>';
+                        bookData += '<td>' + value.BookQuantity + '</td>';
+                    });
+                    $('#SearchedData').append(bookData);
+
+                    var totalPages;
+
+                    if (data.PageSize > 0) {
+                        totalPages = Math.ceil(data.TotalRecords / data.PageSize);
+                    } else {
+                        totalPages = Math.ceil(data.TotalRecords / 10);
+                    }
+
+                    for (var i = 1; i <= totalPages; i++) {
+                        tem += '<li> <a  id="SelectedPage">' + i + '</a> </li>';
+                    }
+                    $('#paging').html(tem);
+
+                    debugger;
+                    console.log('Page Number : ' + data.PageNumber + ' Page Size : ' + data.PageSize + ' Total Records : ' + data.TotalRecords);
+
+                    var PageNumber = data.PageNumber;
+                    var PageSize = data.PageSize;
+                    var TotalRecords = data.TotalRecords;
+
+                    if ((PageNumber * PageSize) > TotalRecords) {
+                        var Massege = 'Showing ' + ((PageNumber - 1) * PageSize + 1) + ' to ' + TotalRecords + ' Records of ' + TotalRecords;
+                    } else {
+                        if (PageNumber == 1) {
+                            var Massege = 'Showing ' + PageNumber + ' to ' + (PageNumber * PageSize) + ' Records of ' + TotalRecords;
+                        } else {
+                            var Massege = 'Showing ' + ((PageNumber - 1) * PageSize + 1) + ' to ' + (PageNumber * PageSize) + ' Records of ' + TotalRecords;
+                        }
+                    }
+                    $('#msg').html(Massege);
+                },
+
+                error: function (err) {
+                    alert("In Fail " + err);
+                    console.error("In Fail " + err);
                 }
-
-                //console.log(totalPages + " & " + data.TotalRecords + " & " + data.PageSize);
-
-                for (var i = 1; i <= totalPages; i++) {
-                    tem += '<li id="xyz" class="pagination" onclick="SearchBtnClick()">' + i +'</li>';
-                }
-                $('#paging').html(tem)
-            },
-
-            error: function (err) {
-                alert("In Fail " + err);
-                console.error("In Fail " + err);
-            }
-        })
-    }
-
-
-    function v(BookName, BookCategoryId, BookPublisherId, PageNumber, PageSize) {
-        $.ajax({
-
-            url: "/Books/SearchBook",
-            method: "POST",
-            data: {
-                BookName: BookName,
-                BookCategoryId: BookCategoryId,
-                BookPublisherId: BookPublisherId,
-                PageNumber: PageNumber,
-                PageSize: PageSize
-            }
-        })
-    }
+            })
+        }
+    });
 </script>

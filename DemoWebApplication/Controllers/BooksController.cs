@@ -14,7 +14,7 @@ namespace DemoWebApplication.Controllers {
             books.PageNumber = booksViewModelObj.PageNumber;
             booksViewModelObj.BooksList = books.GetList();
             booksViewModelObj.TotalRecords = books.TotalRecords;
-            
+
             return View(booksViewModelObj);
         }
 
@@ -37,7 +37,7 @@ namespace DemoWebApplication.Controllers {
 
         [HttpPost]
         public JsonResult SearchBook(BooksViewModel model) {
-            
+
             Books bookObj = new Books();
             bookObj.BookName = model.BookName;
             bookObj.BookCategoryId = model.BookCategoryId;
@@ -49,6 +49,7 @@ namespace DemoWebApplication.Controllers {
             model.PageSize = bookObj.PageSize;
 
             return Json(model, JsonRequestBehavior.AllowGet);
+
         }
     }
 }
