@@ -23,12 +23,12 @@
 
             <input id="submitBtn" type="button" value="Search" class="btn btn-success" />
 
-            <input id="resetBtn" type="reset" value="Clear Form" class="btn btn-danger"/>
+            <input id="resetBtn" type="reset" value="Clear Form" class="btn btn-danger" />
             <br />
             <br />
             <b class="text-info">Page Size : </b>
             @Html.DropDownList("PageSize", new List<SelectListItem> { new SelectListItem { Text = "3", Value = "3" }, new SelectListItem { Text = "5", Value = "5" }, new SelectListItem { Text = "10", Value = "10" } }, new { @class = "form-control" })
-    
+
             <br />
         }
 
@@ -60,12 +60,30 @@
 
         SearchBtnClick();
 
+        $('ul').on('click','li', function () {
+            $(this).addClass('active');
+        });
+
         $("#submitBtn").click(function () {
+            $("#PageNumber").val(1);
             SearchBtnClick();
         });
 
         $("body").on("click", "#SelectedPage", function () {
             $("#PageNumber").val($(this).text());
+            SearchBtnClick();
+
+        });
+
+        $("body").on("click", "#prev", function () {
+            var currentPage = $("#PageNumber").val();
+            $("#PageNumber").val(--currentPage);
+            SearchBtnClick();
+        });
+
+        $("body").on("click", "#next", function () {
+            var currentPage = $("#PageNumber").val();
+            $("#PageNumber").val(++currentPage);            
             SearchBtnClick();
         });
 
@@ -75,9 +93,11 @@
         });
 
         $("#resetBtn").click(function () {
+            $("#PageNumber").val(1);
             this.form.reset();
             SearchBtnClick();
         });
+
 
         function SearchBtnClick(PgNumber) {
             $('#SearchedData').html("");
@@ -91,6 +111,8 @@
                 success: function (data) {
                     var bookData = '';
                     var tem = '';
+
+                    $('#paging').html('');
                     $.each(data.BooksList, function (key, value) {
                         bookData += '<tr>';
                         bookData += '<td>' + value.BookId + '</td>';
@@ -109,8 +131,19 @@
                         totalPages = Math.ceil(data.TotalRecords / 10);
                     }
 
+                    if (data.PageNumber != 1) {
+                        tem += '<li><a id="prev" >Prev</a></li>';
+                    }
                     for (var i = 1; i <= totalPages; i++) {
-                        tem += '<li> <a  id="SelectedPage">' + i + '</a> </li>';
+                        if (data.PageNumber == i) {
+                            tem += '<li class="active"> <a  id="SelectedPage" >' + i + '</a> </li>';
+                        }
+                        else {
+                            tem += '<li> <a  id="SelectedPage">' + i + '</a> </li>';
+                        }
+                    }
+                    if (data.PageNumber != totalPages) {
+                        tem += '<li><a id="next" >Next</a></li>';
                     }
                     $('#paging').html(tem);
 

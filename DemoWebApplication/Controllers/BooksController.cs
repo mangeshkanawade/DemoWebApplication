@@ -49,7 +49,6 @@ namespace DemoWebApplication.Controllers {
             model.PageSize = bookObj.PageSize;
 
             return Json(model, JsonRequestBehavior.AllowGet);
-
         }
     }
 }

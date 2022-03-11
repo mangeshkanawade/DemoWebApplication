@@ -25,19 +25,3 @@
         }
     }
 </table>
-
-<ul class="pagination">
-    @{
-        decimal TotalPages = 1;
-        if (Model.PageSize > 0) {
-            TotalPages = Math.Ceiling((decimal)Model.TotalRecords / Model.PageSize);
-        } else {
-            TotalPages = Math.Ceiling((decimal)Model.TotalRecords / 10);
-        }
-        for (int i = 1; i <= TotalPages; i++) {
-            <li>
-                @Html.ActionLink(i.ToString(), "Index", new DemoWebApplication.Models.BooksViewModel() { PageNumber = i })
-            </li>
-        }
-    }
-</ul>
