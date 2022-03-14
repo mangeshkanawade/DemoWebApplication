@@ -32,35 +32,22 @@
             <br />
         }
 
-        <br />
-
         <label id="msg" style="color:dodgerblue"> </label>
 
-        <div>
-            <table class="table">
-                <tr>
-                    <th> Book ID</th>
-                    <th> Book Name</th>
-                    <th> Book Publication</th>
-                    <th> Book Cateogry</th>
-                    <th> Book Quantity</th>
-                </tr>
-                <tbody id="SearchedData">
-                </tbody>
-            </table>
+        <div id="partial">
+
         </div>
 
-        <ul id="paging" class="pagination">
-        </ul>
+
     </form>
 </div>
 
 <script>
     $(document).ready(function () {
-
+        debugger;
         SearchBtnClick();
 
-        $('ul').on('click','li', function () {
+        $('ul').on('click', 'li', function () {
             $(this).addClass('active');
         });
 
@@ -83,7 +70,7 @@
 
         $("body").on("click", "#next", function () {
             var currentPage = $("#PageNumber").val();
-            $("#PageNumber").val(++currentPage);            
+            $("#PageNumber").val(++currentPage);
             SearchBtnClick();
         });
 
@@ -99,78 +86,91 @@
         });
 
 
+
         function SearchBtnClick(PgNumber) {
-            $('#SearchedData').html("");
 
             $.ajax({
 
-                url: "/Books/SearchBook",
+                url: "/Books/Searching",
                 method: "POST",
                 data: $("#searchForm").serialize(),
 
                 success: function (data) {
-                    var bookData = '';
-                    var tem = '';
-
-                    $('#paging').html('');
-                    $.each(data.BooksList, function (key, value) {
-                        bookData += '<tr>';
-                        bookData += '<td>' + value.BookId + '</td>';
-                        bookData += '<td>' + value.BookName + '</td>';
-                        bookData += '<td>' + value.BookPublisherName + '</td>';
-                        bookData += '<td>' + value.BookCategoryName + '</td>';
-                        bookData += '<td>' + value.BookQuantity + '</td>';
-                    });
-                    $('#SearchedData').append(bookData);
-
-                    var totalPages;
-
-                    if (data.PageSize > 0) {
-                        totalPages = Math.ceil(data.TotalRecords / data.PageSize);
-                    } else {
-                        totalPages = Math.ceil(data.TotalRecords / 10);
-                    }
-
-                    if (data.PageNumber != 1) {
-                        tem += '<li><a id="prev" >Prev</a></li>';
-                    }
-                    for (var i = 1; i <= totalPages; i++) {
-                        if (data.PageNumber == i) {
-                            tem += '<li class="active"> <a  id="SelectedPage" >' + i + '</a> </li>';
-                        }
-                        else {
-                            tem += '<li> <a  id="SelectedPage">' + i + '</a> </li>';
-                        }
-                    }
-                    if (data.PageNumber != totalPages) {
-                        tem += '<li><a id="next" >Next</a></li>';
-                    }
-                    $('#paging').html(tem);
-
-                    debugger;
-                    console.log('Page Number : ' + data.PageNumber + ' Page Size : ' + data.PageSize + ' Total Records : ' + data.TotalRecords);
-
-                    var PageNumber = data.PageNumber;
-                    var PageSize = data.PageSize;
-                    var TotalRecords = data.TotalRecords;
-
-                    if ((PageNumber * PageSize) > TotalRecords) {
-                        var Massege = 'Showing ' + ((PageNumber - 1) * PageSize + 1) + ' to ' + TotalRecords + ' Records of ' + TotalRecords;
-                    } else {
-                        if (PageNumber == 1) {
-                            var Massege = 'Showing ' + PageNumber + ' to ' + (PageNumber * PageSize) + ' Records of ' + TotalRecords;
-                        } else {
-                            var Massege = 'Showing ' + ((PageNumber - 1) * PageSize + 1) + ' to ' + (PageNumber * PageSize) + ' Records of ' + TotalRecords;
-                        }
-                    }
-                    $('#msg').html(Massege);
-                },
-
-                error: function (err) {
-                    alert("In Fail " + err);
-                    console.error("In Fail " + err);
+                    $("#partial").html(data);
                 }
-            })
+            });
+
+            //$('#SearchedData').html("");
+
+            //$.ajax({
+
+            //    url: "/Books/SearchBook",
+            //    method: "POST",
+            //    data: $("#searchForm").serialize(),
+
+            //    success: function (data) {
+            //        var bookData = '';
+            //        var tem = '';
+
+            //        $('#paging').html('');
+            //        $.each(data.BooksList, function (key, value) {
+            //            bookData += '<tr>';
+            //            bookData += '<td>' + value.BookId + '</td>';
+            //            bookData += '<td>' + value.BookName + '</td>';
+            //            bookData += '<td>' + value.BookPublisherName + '</td>';
+            //            bookData += '<td>' + value.BookCategoryName + '</td>';
+            //            bookData += '<td>' + value.BookQuantity + '</td>';
+            //        });
+            //        $('#SearchedData').append(bookData);
+
+            //        var totalPages;
+
+            //        if (data.PageSize > 0) {
+            //            totalPages = Math.ceil(data.TotalRecords / data.PageSize);
+            //        } else {
+            //            totalPages = Math.ceil(data.TotalRecords / 10);
+            //        }
+
+            //        if (data.PageNumber != 1) {
+            //            tem += '<li><a id="prev" >Prev</a></li>';
+            //        }
+            //        for (var i = 1; i <= totalPages; i++) {
+            //            if (data.PageNumber == i) {
+            //                tem += '<li class="active"> <a  id="SelectedPage" >' + i + '</a> </li>';
+            //            }
+            //            else {
+            //                tem += '<li> <a  id="SelectedPage">' + i + '</a> </li>';
+            //            }
+            //        }
+            //        if (data.PageNumber != totalPages) {
+            //            tem += '<li><a id="next" >Next</a></li>';
+            //        }
+            //        $('#paging').html(tem);
+
+            //        debugger;
+            //        console.log('Page Number : ' + data.PageNumber + ' Page Size : ' + data.PageSize + ' Total Records : ' + data.TotalRecords);
+
+            //        var PageNumber = data.PageNumber;
+            //        var PageSize = data.PageSize;
+            //        var TotalRecords = data.TotalRecords;
+
+            //        if ((PageNumber * PageSize) > TotalRecords) {
+            //            var Massege = 'Showing ' + ((PageNumber - 1) * PageSize + 1) + ' to ' + TotalRecords + ' Records of ' + TotalRecords;
+            //        } else {
+            //            if (PageNumber == 1) {
+            //                var Massege = 'Showing ' + PageNumber + ' to ' + (PageNumber * PageSize) + ' Records of ' + TotalRecords;
+            //            } else {
+            //                var Massege = 'Showing ' + ((PageNumber - 1) * PageSize + 1) + ' to ' + (PageNumber * PageSize) + ' Records of ' + TotalRecords;
+            //            }
+            //        }
+            //        $('#msg').html(Massege);
+            //    },
+
+            //    error: function (err) {
+            //        alert("In Fail " + err);
+            //        console.error("In Fail " + err);
+            //    }
+            //})
         }
     });
 </script>

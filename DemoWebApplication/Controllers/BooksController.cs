@@ -12,6 +12,7 @@ namespace DemoWebApplication.Controllers {
         public ActionResult Index(BooksViewModel booksViewModelObj) {
             Books books = new Books();
             books.PageNumber = booksViewModelObj.PageNumber;
+            books.PageSize = booksViewModelObj.PageSize;
             booksViewModelObj.BooksList = books.GetList();
             booksViewModelObj.TotalRecords = books.TotalRecords;
 
@@ -35,9 +36,23 @@ namespace DemoWebApplication.Controllers {
             return View(booksViewModelObj);
         }
 
-        [HttpPost]
-        public JsonResult SearchBook(BooksViewModel model) {
+        //[HttpPost]
+        //public JsonResult SearchBook(BooksViewModel model) {
 
+        //    Books bookObj = new Books();
+        //    bookObj.BookName = model.BookName;
+        //    bookObj.BookCategoryId = model.BookCategoryId;
+        //    bookObj.BookPublisherId = model.BookPublisherId;
+        //    bookObj.PageNumber = model.PageNumber;
+        //    bookObj.PageSize = model.PageSize;
+        //    model.BooksList = bookObj.GetList();
+        //    model.TotalRecords = bookObj.TotalRecords;
+        //    model.PageSize = bookObj.PageSize;
+
+        //    return Json(model, JsonRequestBehavior.AllowGet);
+        //}
+
+        public ActionResult Searching(BooksViewModel model) {
             Books bookObj = new Books();
             bookObj.BookName = model.BookName;
             bookObj.BookCategoryId = model.BookCategoryId;
@@ -47,8 +62,7 @@ namespace DemoWebApplication.Controllers {
             model.BooksList = bookObj.GetList();
             model.TotalRecords = bookObj.TotalRecords;
             model.PageSize = bookObj.PageSize;
-
-            return Json(model, JsonRequestBehavior.AllowGet);
+            return PartialView("_BookList", model);
         }
     }
 }
