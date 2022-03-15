@@ -13,21 +13,42 @@
 <div class="container">
     <form id="searchForm" class="form-inline" method="post">
         @{
-            @Html.TextBoxFor(model => model.BookName, null, new { @class = "form-control", @placeholder = "Enter Book Name " })
+            @Html.TextBoxFor(
+            model => model.BookName,
+            null,
+            new { @class = "form-control", @placeholder = "Enter Book Name " })
 
-            @Html.DropDownListFor(model => model.BookCategoryId, new SelectList(Model.BooksCategoriesList, "BookCategoryId", "BookCategoryName"), "Select Cateogry", new { @class = "form-control" })
+            @Html.DropDownListFor(
+            model => model.BookCategoryId,
+            new SelectList(Model.BooksCategoriesList, "BookCategoryId", "BookCategoryName"),
+            "Select Cateogry",
+            new { @class = "form-control" })
 
-            @Html.DropDownListFor(model => model.BookPublisherId, new SelectList(Model.BooksPublicationsList, "BookPublisherId", "BookPublisherName"), "Select Publisher", new { @class = "form-control" })
+            @Html.DropDownListFor(
+            model => model.BookPublisherId,
+            new SelectList(Model.BooksPublicationsList, "BookPublisherId", "BookPublisherName"),
+            "Select Publisher",
+            new { @class = "form-control" })
 
-            @Html.Hidden("PageNumber", 1, new { })
+            @Html.Hidden(
+            "PageNumber",
+            1,
+            new { })
 
             <input id="submitBtn" type="button" value="Search" class="btn btn-success" />
 
             <input id="resetBtn" type="reset" value="Clear Form" class="btn btn-danger" />
+            <a class="btn btn-info" href="AddBook">Add Book</a>
             <br />
             <br />
             <b class="text-info">Page Size : </b>
-            @Html.DropDownList("PageSize", new List<SelectListItem> { new SelectListItem { Text = "3", Value = "3" }, new SelectListItem { Text = "5", Value = "5" }, new SelectListItem { Text = "10", Value = "10" } }, new { @class = "form-control" })
+            @Html.DropDownList(
+           "PageSize",
+           new List<SelectListItem> {
+               new SelectListItem { Text = "3", Value = "3" },
+               new SelectListItem { Text = "5", Value = "5" },
+               new SelectListItem { Text = "10", Value = "10" } },
+           new { @class = "form-control" })
 
             <br />
         }
@@ -37,8 +58,6 @@
         <div id="partial">
 
         </div>
-
-
     </form>
 </div>
 
@@ -84,14 +103,10 @@
             this.form.reset();
             SearchBtnClick();
         });
-
-
-
-        function SearchBtnClick(PgNumber) {
+        function SearchBtnClick() {
 
             $.ajax({
-
-                url: "/Books/Searching",
+                url: "/Books/SearchBook",
                 method: "POST",
                 data: $("#searchForm").serialize(),
 
@@ -99,78 +114,6 @@
                     $("#partial").html(data);
                 }
             });
-
-            //$('#SearchedData').html("");
-
-            //$.ajax({
-
-            //    url: "/Books/SearchBook",
-            //    method: "POST",
-            //    data: $("#searchForm").serialize(),
-
-            //    success: function (data) {
-            //        var bookData = '';
-            //        var tem = '';
-
-            //        $('#paging').html('');
-            //        $.each(data.BooksList, function (key, value) {
-            //            bookData += '<tr>';
-            //            bookData += '<td>' + value.BookId + '</td>';
-            //            bookData += '<td>' + value.BookName + '</td>';
-            //            bookData += '<td>' + value.BookPublisherName + '</td>';
-            //            bookData += '<td>' + value.BookCategoryName + '</td>';
-            //            bookData += '<td>' + value.BookQuantity + '</td>';
-            //        });
-            //        $('#SearchedData').append(bookData);
-
-            //        var totalPages;
-
-            //        if (data.PageSize > 0) {
-            //            totalPages = Math.ceil(data.TotalRecords / data.PageSize);
-            //        } else {
-            //            totalPages = Math.ceil(data.TotalRecords / 10);
-            //        }
-
-            //        if (data.PageNumber != 1) {
-            //            tem += '<li><a id="prev" >Prev</a></li>';
-            //        }
-            //        for (var i = 1; i <= totalPages; i++) {
-            //            if (data.PageNumber == i) {
-            //                tem += '<li class="active"> <a  id="SelectedPage" >' + i + '</a> </li>';
-            //            }
-            //            else {
-            //                tem += '<li> <a  id="SelectedPage">' + i + '</a> </li>';
-            //            }
-            //        }
-            //        if (data.PageNumber != totalPages) {
-            //            tem += '<li><a id="next" >Next</a></li>';
-            //        }
-            //        $('#paging').html(tem);
-
-            //        debugger;
-            //        console.log('Page Number : ' + data.PageNumber + ' Page Size : ' + data.PageSize + ' Total Records : ' + data.TotalRecords);
-
-            //        var PageNumber = data.PageNumber;
-            //        var PageSize = data.PageSize;
-            //        var TotalRecords = data.TotalRecords;
-
-            //        if ((PageNumber * PageSize) > TotalRecords) {
-            //            var Massege = 'Showing ' + ((PageNumber - 1) * PageSize + 1) + ' to ' + TotalRecords + ' Records of ' + TotalRecords;
-            //        } else {
-            //            if (PageNumber == 1) {
-            //                var Massege = 'Showing ' + PageNumber + ' to ' + (PageNumber * PageSize) + ' Records of ' + TotalRecords;
-            //            } else {
-            //                var Massege = 'Showing ' + ((PageNumber - 1) * PageSize + 1) + ' to ' + (PageNumber * PageSize) + ' Records of ' + TotalRecords;
-            //            }
-            //        }
-            //        $('#msg').html(Massege);
-            //    },
-
-            //    error: function (err) {
-            //        alert("In Fail " + err);
-            //        console.error("In Fail " + err);
-            //    }
-            //})
         }
     });
 </script>

@@ -1,21 +1,105 @@
-﻿@*@model Books*@
-@model DemoWebApplication.Models.BooksViewModel
+﻿@model DemoWebApplication.Models.BooksViewModel
 @{
     ViewBag.Title = "Add Book";
 }
+<head>
+    <script src="~/Scripts/jquery-3.6.0.js"></script>
+    <script src="~/Scripts/jquery-3.6.0.min.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
 
-<h2>View</h2>
+</head>
+<h2>Add Book</h2>
+
+<div id="msg"></div>
+
+<form class="form-control-static" id="addBookForm" method="post">
+    @Html.HiddenFor(
+           model => model.BookId)
+    <b>Name : </b>
+    @Html.TextBoxFor(
+     model => model.BookName,
+     null,
+     new { @class = "form-control", @placeholder = "Enter Book Name " })
+
+    @Html.ValidationMessageFor(model => model.BookName, null, new { @class = "text-danger" })<br />
+    <b>Cateogry : </b>
+    @Html.DropDownListFor(
+        model => model.BookCategoryId,
+        new SelectList(Model.BooksCategoriesList, "BookCategoryId", "BookCategoryName"),
+        "Select Cateogry", new { @class = "form-control" })
+
+    @Html.ValidationMessageFor(model => model.BookCategoryId, null, new { @class = "text-danger" })<br />
+    <b>Publication : </b>
+    @Html.DropDownListFor(
+        model => model.BookPublisherId,
+        new SelectList(Model.BooksPublicationsList, "BookPublisherId", "BookPublisherName"),
+        "Select Publisher", new { @class = "form-control" })
+
+    @Html.ValidationMessageFor(model => model.BookPublisherId, null, new { @class = "text-danger" })<br />
+    <b>Quantity : </b>
+    @Html.TextBoxFor(
+        model => model.BookQuantity,
+        null,
+        new { @type = "number", @class = "form-control", @placeholder = "Enter Book Quantity " }
+        )
+    @Html.ValidationMessageFor(model => model.BookQuantity, null, new { @class = "text-danger" })<br />
 
 
+    @Html.CheckBox(
+   "IsActive", true,
+   new { @class = "checkbox-inline" }) <label class="checkbox-inline"><b>Is Active</b></label>
 
-<div class="active">
-    <b>Book Name : </b><input id="BookName" type="text" required /> <br /> <br />
-    <b>Select Cateogry :</b>
-    @Html.DropDownListFor(model => model.BookCategoryId, new SelectList(Model.BooksCategoriesList, "BookCategoryId", "BookCategoryName"), "Select Cateogry", new { @class = "for-control" }) <br /> <br />
-    <b>Select Publication :</b>
-    @Html.DropDownListFor(model => model.BookPublisherId, new SelectList(Model.BooksPublicationsList, "BookPublisherId", "BookPublisherName"), "Select Publisher", new { @class = "for-control" }) <br /> <br />
-    <b>Book Quantity :</b> <input id="BookQuantity" type="text" /> <br /> <br />
-    <input id="Submit1" type="submit" value="submit" />
+    <br />
+    <br />
 
-</div>
+    <input id="submitBtn" type="button" value="Add" class="btn btn-success" />
 
+    @*<input id="resetBtn" type="reset" value="Clear Form" class="btn btn-danger" />*@
+    <a class="btn btn-danger" href="AddBook">Clear Form</a>
+    <a class="bottomNav" onclick="history.go(-1)">Back</a><br />
+</form>
+
+<script>
+        $(document).ready(function () {
+            $("#submitBtn").click(function () {
+                var form = $("#addBookForm");
+                form.validate();
+                if(form.valid()){
+                    AddBook();
+                }
+            });
+
+            $("#resetBtn").click(function () {
+                $("#msg").html('');
+                $("#addBookForm")[0].reset();
+                this.form.reset();
+
+            });
+
+            function AddBook() {
+                $.ajax({
+                    url: "/Books/AddBook",
+                    method: "POST",
+                    data: $("#addBookForm").serialize(),
+                    success: function (data) {
+                        console.log('in Success');
+                        var msg = '<div class="alert alert-success"><strong> Success ! </strong> Book <strong>' + data.BookName + '</strong> Added Successfully.';
+                        $("#msg").html(msg);
+                        $("#addBookForm")[0].reset();
+                        
+                    },
+                    error: function (data) {
+                        var msg = '<div class="alert alert-danger"><strong> Fail! </strong> Add Book Error';
+                        $("#msg").html(msg);
+                    }
+                });
+            }
+
+        });
+    </script>

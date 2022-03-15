@@ -30,6 +30,8 @@ public class Books {
     public string BookName { get; set; }
     public int BookCategoryId { get; set; }
     public int BookPublisherId { get; set; }
+    public String BookCategoryName { get; set; }
+    public String BookPublisherName { get; set; }
     public int BookQuantity { get; set; }
     public bool IsActive { get; set; }
     public int CreatedBy { get; set; }
@@ -88,26 +90,26 @@ public class Books {
             this.db.AddInParameter(com, "IsActive", DbType.Boolean, this.IsActive);
 
             if (this.CreatedBy > 0) {
-                this.db.AddInParameter(com, "CreatedBy", DbType.Int32, this.CreatedBy);
+                this.db.AddInParameter(com, "CreatedBy", DbType.Int32, 1);
             } else {
-                this.db.AddInParameter(com, "CreatedBy", DbType.Int32, DBNull.Value);
+                this.db.AddInParameter(com, "CreatedBy", DbType.Int32, 1);
             }
 
             if (this.CreatedOn > DateTime.MinValue) {
-                this.db.AddInParameter(com, "CreatedOn", DbType.DateTime, this.CreatedOn);
+                this.db.AddInParameter(com, "CreatedOn", DbType.DateTime, DateTime.Now);
             } else {
-                this.db.AddInParameter(com, "CreatedOn", DbType.DateTime, DBNull.Value);
+                this.db.AddInParameter(com, "CreatedOn", DbType.DateTime, DateTime.Now);
             }
 
             if (this.ModifiedBy > 0) {
-                this.db.AddInParameter(com, "ModifiedBy", DbType.Int32, this.ModifiedBy);
+                this.db.AddInParameter(com, "ModifiedBy", DbType.Int32,1);
             } else {
-                this.db.AddInParameter(com, "ModifiedBy", DbType.Int32, DBNull.Value);
+                this.db.AddInParameter(com, "ModifiedBy", DbType.Int32, 1);
             }
             if (this.ModifiedOn > DateTime.MinValue) {
-                this.db.AddInParameter(com, "ModifiedOn", DbType.DateTime, this.ModifiedOn);
+                this.db.AddInParameter(com, "ModifiedOn", DbType.DateTime, DateTime.Now);
             } else {
-                this.db.AddInParameter(com, "ModifiedOn", DbType.DateTime, DBNull.Value);
+                this.db.AddInParameter(com, "ModifiedOn", DbType.DateTime, DateTime.Now);
             }
 
             this.db.ExecuteNonQuery(com);
@@ -125,7 +127,7 @@ public class Books {
         try {
             DbCommand com = this.db.GetStoredProcCommand("BooksUpdate");
 
-            this.db.AddOutParameter(com, "BookId", DbType.Int32, 1024);
+            this.db.AddInParameter(com, "BookId", DbType.Int32, this.BookId);
 
             if (!String.IsNullOrEmpty(this.BookName)) {
                 this.db.AddInParameter(com, "BookName", DbType.String, this.BookName);
@@ -133,19 +135,19 @@ public class Books {
                 this.db.AddInParameter(com, "BookName", DbType.String, DBNull.Value);
             }
             if (this.BookCategoryId > 0) {
-                this.db.AddInParameter(com, "BookCategoryId", DbType.Int32, 1024);
+                this.db.AddInParameter(com, "BookCategoryId", DbType.Int32, this.BookCategoryId);
             } else {
                 this.db.AddInParameter(com, "BookCategoryId", DbType.Int32, DBNull.Value);
             }
 
             if (this.BookPublisherId > 0) {
-                this.db.AddInParameter(com, "BookPublisherId", DbType.Int32, 1024);
+                this.db.AddInParameter(com, "BookPublisherId", DbType.Int32, this.BookPublisherId);
             } else {
                 this.db.AddInParameter(com, "BookPublisherId", DbType.Int32, DBNull.Value);
             }
 
             if (this.BookQuantity > 0) {
-                this.db.AddInParameter(com, "BookQuantity", DbType.Int32, 1024);
+                this.db.AddInParameter(com, "BookQuantity", DbType.Int32, this.BookQuantity);
             } else {
                 this.db.AddInParameter(com, "BookQuantity", DbType.Int32, DBNull.Value);
             }
@@ -176,6 +178,8 @@ public class Books {
             } 
 
             this.db.ExecuteNonQuery(com);
+
+           
 
         } catch (Exception ex) {
             // To Do: Handle Exception
@@ -264,8 +268,10 @@ public class Books {
                     DataTable dt = ds.Tables[0];
                     this.BookId = Convert.ToInt32(dt.Rows[0]["BookId"]);
                     this.BookName = Convert.ToString(dt.Rows[0]["BookName"]);
-                    this.BookCategoryId = Convert.ToInt32(dt.Rows[0]["BookCateogryId"]);
+                    this.BookCategoryId = Convert.ToInt32(dt.Rows[0]["BookCategoryId"]);
+                    this.BookCategoryName = Convert.ToString(dt.Rows[0]["BookCategoryName"]);
                     this.BookPublisherId = Convert.ToInt32(dt.Rows[0]["BookPublisherId"]);
+                    this.BookPublisherName = Convert.ToString(dt.Rows[0]["BookPublisherName"]);
                     this.BookQuantity = Convert.ToInt32(dt.Rows[0]["BookQuantity"]);
                     this.IsActive = Convert.ToBoolean(dt.Rows[0]["IsActive"]);
                     this.CreatedBy = Convert.ToInt32(dt.Rows[0]["CreatedBy"]);
@@ -275,7 +281,6 @@ public class Books {
                     return true;
                 }
             }
-
             return false;
         } catch (Exception ex) {
             // To Do: Handle Exception

@@ -1,14 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.ComponentModel.DataAnnotations;
 
 namespace DemoWebApplication.Models {
     public class BooksViewModel {
         public int BookId { get; set; }
+
+        [Required(ErrorMessage = "Please Enter Book Name First")]
         public string BookName { get; set; }
+
+        [Required(ErrorMessage = "Please Select Book Category First")]
         public int BookCategoryId { get; set; }
+
+        [Required(ErrorMessage = "Please Select Book Publication First")]
         public int BookPublisherId { get; set; }
+
+        [Required(ErrorMessage = "Please Enter Book Quantity First")]
+        [Range(1, 100, ErrorMessage = "Quantity Must be More than 1")]
         public int BookQuantity { get; set; }
         public bool IsActive { get; set; }
         public int CreatedBy { get; set; }

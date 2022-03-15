@@ -37,6 +37,7 @@
         <th> Book Publication</th>
         <th> Book Cateogry</th>
         <th> Book Quantity</th>
+        <th> Action </th>
     </tr>
 
     @{
@@ -48,6 +49,11 @@
                     <td>@Data.BookPublisherName</td>
                     <td>@Data.BookCategoryName</td>
                     <td>@Data.BookQuantity</td>
+                    <td>
+                        @Html.ActionLink(" Edit", "AddBook", new { BookId = Data.BookId }, new { @class = "glyphicon glyphicon-edit" })
+                        
+                       
+                    </td>
                 </tr>
             }
         } else {
