@@ -50,12 +50,49 @@ namespace DemoWebApplication.Controllers {
         [HttpGet]
         public ActionResult SearchBook() {
             BooksViewModel booksViewModelObj = new BooksViewModel();
+           // BooksViewModel bb = new BooksViewModel();
+            BooksViewModel bb = (BooksViewModel) Session["PrevData"];
+            if (bb != null) {
+                //if (bb.BookName != null) {
+                //    booksViewModelObj.BookName = bb.BookName;
+                //}
+
+                //booksViewModelObj.BookCategoryId = bb.BookCategoryId;
+                //booksViewModelObj.BookPublisherId = bb.BookPublisherId;
+                //booksViewModelObj.PageNumber = bb.PageNumber;
+                //booksViewModelObj.PageSize = bb.PageSize;
+
+                booksViewModelObj = bb;
+            }
             booksViewModelObj.BooksPublicationsList = new Books().BookPublicationsGetList();
             booksViewModelObj.BooksCategoriesList = new Books().BookCategoriesGetList();
+           
+            Session["PrevData"] = null;
+
             return View(booksViewModelObj);
         }
         [HttpPost]
         public ActionResult SearchBook(BooksViewModel model) {
+            
+            Session["PrevData"] = null;
+
+            //if (model.BookName != null) {
+            //    Session["BookName"] = model.BookName.ToString();
+            //}
+
+            //Session["BookCategoryId"] = model.BookCategoryId.ToString();
+
+            //Session["BookPublisherId"] = model.BookPublisherId.ToString();
+
+            //Session["PageNumber"] = model.PageNumber.ToString();
+
+            //Session["PageSize"] = model.PageSize.ToString();
+
+            //BooksViewModel bb = new BooksViewModel();
+            //bb = model;
+
+            Session["PrevData"] = model;
+           
             Books bookObj = new Books();
             bookObj.BookName = model.BookName;
             bookObj.BookCategoryId = model.BookCategoryId;
@@ -65,6 +102,7 @@ namespace DemoWebApplication.Controllers {
             model.BooksList = bookObj.GetList();
             model.TotalRecords = bookObj.TotalRecords;
             model.PageSize = bookObj.PageSize;
+
             return PartialView("_BookList", model);
         }
 

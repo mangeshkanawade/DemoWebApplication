@@ -60,46 +60,52 @@
 
     <input id="submitBtn" type="button" value="Add" class="btn btn-success" />
 
-    @*<input id="resetBtn" type="reset" value="Clear Form" class="btn btn-danger" />*@
     <a class="btn btn-danger" href="AddBook">Clear Form</a>
-    <a class="bottomNav" onclick="history.go(-1)">Back</a><br />
+    @Html.ActionLink(
+    "Back",
+    "SearchBook",
+    null,
+    new {
+        @class = "btn btn-warning"
+    })
+
 </form>
 
 <script>
-        $(document).ready(function () {
-            $("#submitBtn").click(function () {
-                var form = $("#addBookForm");
-                form.validate();
-                if(form.valid()){
-                    AddBook();
-                }
-            });
-
-            $("#resetBtn").click(function () {
-                $("#msg").html('');
-                $("#addBookForm")[0].reset();
-                this.form.reset();
-
-            });
-
-            function AddBook() {
-                $.ajax({
-                    url: "/Books/AddBook",
-                    method: "POST",
-                    data: $("#addBookForm").serialize(),
-                    success: function (data) {
-                        console.log('in Success');
-                        var msg = '<div class="alert alert-success"><strong> Success ! </strong> Book <strong>' + data.BookName + '</strong> Added Successfully.';
-                        $("#msg").html(msg);
-                        $("#addBookForm")[0].reset();
-                        
-                    },
-                    error: function (data) {
-                        var msg = '<div class="alert alert-danger"><strong> Fail! </strong> Add Book Error';
-                        $("#msg").html(msg);
-                    }
-                });
+    $(document).ready(function () {
+        $("#submitBtn").click(function () {
+            var form = $("#addBookForm");
+            form.validate();
+            if (form.valid()) {
+                AddBook();
             }
+        });
+
+        $("#resetBtn").click(function () {
+            $("#msg").html('');
+            $("#addBookForm")[0].reset();
+            this.form.reset();
 
         });
-    </script>
+
+        function AddBook() {
+            $.ajax({
+                url: "/Books/AddBook",
+                method: "POST",
+                data: $("#addBookForm").serialize(),
+                success: function (data) {
+                    console.log('in Success ' + data.BookId);
+                    var msg = '<div class="alert alert-success"><strong> Success ! </strong> Book <strong>' + data.BookName + '</strong> Added Successfully.';
+                    $("#msg").html(msg);
+                    $("#addBookForm")[0].reset();
+
+                },
+                error: function (data) {
+                    var msg = '<div class="alert alert-danger"><strong> Fail! </strong> Add Book Error';
+                    $("#msg").html(msg);
+                }
+            });
+        }
+
+    });
+</script>

@@ -2,95 +2,102 @@
 
 
 @{
-    if ((Model.PageNumber * Model.PageSize) > Model.TotalRecords) {
-
-        int a = (Model.PageNumber - 1) * Model.PageSize + 1;
-
-        <label id="msg" style="color:dodgerblue">
-            Showing @a to @Model.TotalRecords Records of @Model.TotalRecords
-        </label>
-    } else {
-        if (Model.PageNumber == 1) {
-
-            int a = (Model.PageNumber * Model.PageSize);
-
-            <label id="msg" style="color:dodgerblue">
-                Showing  @Model.PageNumber  to  @a  Records of @Model.TotalRecords
-            </label>
-        } else {
+    if (Model.TotalRecords != 0) {
+        if ((Model.PageNumber * Model.PageSize) > Model.TotalRecords) {
 
             int a = (Model.PageNumber - 1) * Model.PageSize + 1;
-            int b = Model.PageNumber * Model.PageSize;
 
             <label id="msg" style="color:dodgerblue">
-                Showing  @a to  @b  Records of @Model.TotalRecords
+                Showing @a to @Model.TotalRecords Records of @Model.TotalRecords
             </label>
+        } else {
+            if (Model.PageNumber == 1) {
+
+                int a = (Model.PageNumber * Model.PageSize);
+
+                <label id="msg" style="color:dodgerblue">
+                    Showing  @Model.PageNumber  to  @a  Records of @Model.TotalRecords
+                </label>
+            } else {
+
+                int a = (Model.PageNumber - 1) * Model.PageSize + 1;
+                int b = Model.PageNumber * Model.PageSize;
+
+                <label id="msg" style="color:dodgerblue">
+                    Showing  @a to  @b  Records of @Model.TotalRecords
+                </label>
+            }
         }
+    } else {
+        <label id="msg" style="color:dodgerblue">
+            No Data Found
+        </label>
     }
 }
 
+@if (Model.TotalRecords != 0) {
+    <table class="table">
+        <tr>
+            <th> Book ID</th>
+            <th> Book Name</th>
+            <th> Book Publication</th>
+            <th> Book Cateogry</th>
+            <th> Book Quantity</th>
+            <th> Action </th>
+        </tr>
 
-<table class="table">
-    <tr>
-        <th> Book ID</th>
-        <th> Book Name</th>
-        <th> Book Publication</th>
-        <th> Book Cateogry</th>
-        <th> Book Quantity</th>
-        <th> Action </th>
-    </tr>
 
-    @{
-        if (Model.BooksList != null) {
-            foreach (DemoWebApplication.Models.BooksViewModel Data in Model.BooksList) {
-                <tr>
-                    <td>@Data.BookId</td>
-                    <td>@Data.BookName</td>
-                    <td>@Data.BookPublisherName</td>
-                    <td>@Data.BookCategoryName</td>
-                    <td>@Data.BookQuantity</td>
-                    <td>
-                        @Html.ActionLink(" Edit", "AddBook", new { BookId = Data.BookId }, new { @class = "glyphicon glyphicon-edit" })
-                        
-                       
-                    </td>
-                </tr>
+        @{
+            if (Model.BooksList != null) {
+                foreach (DemoWebApplication.Models.BooksViewModel Data in Model.BooksList) {
+                    <tr>
+                        <td>@Data.BookId</td>
+                        <td>@Data.BookName</td>
+                        <td>@Data.BookPublisherName</td>
+                        <td>@Data.BookCategoryName</td>
+                        <td>@Data.BookQuantity</td>
+                        <td>
+                            @Html.ActionLink(" Edit", "AddBook", new { BookId = Data.BookId }, new { @class = "glyphicon glyphicon-edit" })
+                        </td>
+                    </tr>
+                }
+            } else {
+                <tr><td colspan="5">Data Not Found</td></tr>
             }
-        } else {
-            <tr><td colspan="5">Data Not Found</td></tr>
         }
-    }
-</table>
-
+    </table>
+}
 <footer>
     <ul id="paging" class="pagination">
 
         @{
-            decimal TotalPages = 1;
-            if (Model.PageSize > 0) {
-                TotalPages = Math.Ceiling((decimal)Model.TotalRecords / Model.PageSize);
-            }
+            if (Model.TotalRecords != 0) {
+                decimal TotalPages = 1;
+                if (Model.PageSize > 0) {
+                    TotalPages = Math.Ceiling((decimal)Model.TotalRecords / Model.PageSize);
+                }
 
-            if (Model.PageNumber != 1) {
-                <li><a id="prev">Prev</a></li>
-            }
+                if (Model.PageNumber != 1) {
+                    <li><a id="prev">Prev</a></li>
+                }
 
-            for (int i = 1; i <= TotalPages; i++) {
-                if (Model.PageNumber == i) {
-                    <li class="active">
-                        <a id="SelectedPage">  @i  </a>
-                    </li>
+                for (int i = 1; i <= TotalPages; i++) {
+                    if (Model.PageNumber == i) {
+                        <li class="active">
+                            <a id="SelectedPage">  @i  </a>
+                        </li>
 
-                } else {
+                    } else {
+                        <li>
+                            <a id="SelectedPage">  @i  </a>
+                        </li>
+                    }
+                }
+                if (Model.PageNumber != TotalPages) {
                     <li>
-                        <a id="SelectedPage">  @i  </a>
+                        <a id="next">Next</a>
                     </li>
                 }
-            }
-            if (Model.PageNumber != TotalPages) {
-                <li>
-                    <a id="next">Next</a>
-                </li>
             }
         }
     </ul>

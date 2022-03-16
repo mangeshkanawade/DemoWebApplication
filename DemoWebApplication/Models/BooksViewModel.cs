@@ -29,7 +29,7 @@ namespace DemoWebApplication.Models {
         public List<BooksViewModel> BooksCategoriesList { get; set; }
         public List<BooksViewModel> BooksList { get; set; }
         public int TotalRecords { get; set; }
-        public int PageNumber { get; set; }
+        public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; }
     }
 }

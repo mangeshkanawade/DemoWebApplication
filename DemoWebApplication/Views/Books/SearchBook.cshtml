@@ -1,4 +1,5 @@
-﻿@model DemoWebApplication.Models.BooksViewModel
+﻿@using DemoWebApplication.Models
+@model BooksViewModel
 @{
     ViewBag.Title = "SearchBook";
 }
@@ -14,41 +15,40 @@
     <form id="searchForm" class="form-inline" method="post">
         @{
             @Html.TextBoxFor(
-            model => model.BookName,
-            null,
-            new { @class = "form-control", @placeholder = "Enter Book Name " })
+     model => model.BookName,
+     null,
+     new { @class = "form-control", @placeholder = "Enter Book Name " })
 
             @Html.DropDownListFor(
-            model => model.BookCategoryId,
-            new SelectList(Model.BooksCategoriesList, "BookCategoryId", "BookCategoryName"),
-            "Select Cateogry",
-            new { @class = "form-control" })
+     model => model.BookCategoryId,
+     new SelectList(Model.BooksCategoriesList, "BookCategoryId", "BookCategoryName"),
+     "Select Cateogry",
+     new { @class = "form-control" })
 
             @Html.DropDownListFor(
-            model => model.BookPublisherId,
-            new SelectList(Model.BooksPublicationsList, "BookPublisherId", "BookPublisherName"),
-            "Select Publisher",
-            new { @class = "form-control" })
+     model => model.BookPublisherId,
+     new SelectList(Model.BooksPublicationsList, "BookPublisherId", "BookPublisherName"),
+     "Select Publisher",
+     new { @class = "form-control" })
 
-            @Html.Hidden(
-            "PageNumber",
-            1,
-            new { })
+
+            @Html.HiddenFor(model => model.PageNumber, new { @Value = Model.PageNumber })
 
             <input id="submitBtn" type="button" value="Search" class="btn btn-success" />
 
-            <input id="resetBtn" type="reset" value="Clear Form" class="btn btn-danger" />
+            @*<input id="resetBtn" type="reset" value="Clear Form" class="btn btn-danger" />*@
+            <a class="btn btn-danger" href="SearchBook">Clear Form</a>
             <a class="btn btn-info" href="AddBook">Add Book</a>
             <br />
             <br />
             <b class="text-info">Page Size : </b>
             @Html.DropDownList(
-           "PageSize",
-           new List<SelectListItem> {
+    "PageSize",
+    new List<SelectListItem> {
                new SelectListItem { Text = "3", Value = "3" },
                new SelectListItem { Text = "5", Value = "5" },
                new SelectListItem { Text = "10", Value = "10" } },
-           new { @class = "form-control" })
+    new { @class = "form-control" })
 
             <br />
         }
@@ -60,7 +60,14 @@
         </div>
     </form>
 </div>
+@*@{
+    <b>@Session["BookName"]</b>
+    <b>@Session["BookCategoryId"]</b>
+    <b>@Session["BookPublisherId"]</b>
+    <b>@Session["PageNumber"]</b>
+    <b>@Session["PageSize"]</b>
 
+}*@
 <script>
     $(document).ready(function () {
         debugger;
@@ -78,7 +85,6 @@
         $("body").on("click", "#SelectedPage", function () {
             $("#PageNumber").val($(this).text());
             SearchBtnClick();
-
         });
 
         $("body").on("click", "#prev", function () {
@@ -101,6 +107,7 @@
         $("#resetBtn").click(function () {
             $("#PageNumber").val(1);
             this.form.reset();
+            sessionStorage.clear();
             SearchBtnClick();
         });
         function SearchBtnClick() {

@@ -39,7 +39,7 @@ public class Books {
     public int ModifiedBy { get; set; }
     public DateTime ModifiedOn { get; set; }
     public int TotalRecords { get; set; }
-    public int PageNumber { get; set; }
+    public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; }
     #endregion
 
