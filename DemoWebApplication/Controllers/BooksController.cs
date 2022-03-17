@@ -35,7 +35,7 @@ namespace DemoWebApplication.Controllers {
         }
 
         [HttpPost]
-        public JsonResult AddBook(BooksViewModel model) {
+        public ActionResult AddBook(BooksViewModel model) {
             Books books = new Books();
             books.BookId = model.BookId;
             books.BookName = model.BookName;
@@ -44,55 +44,48 @@ namespace DemoWebApplication.Controllers {
             books.BookQuantity = model.BookQuantity;
             books.IsActive = model.IsActive;
             books.Save();
+            //return View(books);
             return Json(books, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
-        public ActionResult SearchBook() {
+        public ActionResult SearchBook(Books books) {
+
+
+
             BooksViewModel booksViewModelObj = new BooksViewModel();
-           // BooksViewModel bb = new BooksViewModel();
-            BooksViewModel bb = (BooksViewModel) Session["PrevData"];
+            BooksViewModel bb = (BooksViewModel)Session["PrevData"];
             if (bb != null) {
-                //if (bb.BookName != null) {
-                //    booksViewModelObj.BookName = bb.BookName;
-                //}
-
-                //booksViewModelObj.BookCategoryId = bb.BookCategoryId;
-                //booksViewModelObj.BookPublisherId = bb.BookPublisherId;
-                //booksViewModelObj.PageNumber = bb.PageNumber;
-                //booksViewModelObj.PageSize = bb.PageSize;
-
-                booksViewModelObj = bb;
+                // booksViewModelObj = bb;
             }
             booksViewModelObj.BooksPublicationsList = new Books().BookPublicationsGetList();
             booksViewModelObj.BooksCategoriesList = new Books().BookCategoriesGetList();
-           
+
             Session["PrevData"] = null;
+
+            Books bookObj = new Books();
+            if (books.BookId > 0) {
+                bookObj.BookId = books.BookId;
+                if (bookObj.Load()) {
+                    booksViewModelObj.BookId = bookObj.BookId;
+                    booksViewModelObj.BookName = bookObj.BookName;
+                    booksViewModelObj.BookCategoryId = bookObj.BookCategoryId;
+                    booksViewModelObj.BookCategoryName = bookObj.BookCategoryName;
+                    booksViewModelObj.BookPublisherId = bookObj.BookPublisherId;
+                    booksViewModelObj.BookPublisherName = bookObj.BookPublisherName;
+                    booksViewModelObj.BookQuantity = bookObj.BookQuantity;
+                }
+            }
 
             return View(booksViewModelObj);
         }
         [HttpPost]
         public ActionResult SearchBook(BooksViewModel model) {
-            
+
             Session["PrevData"] = null;
 
-            //if (model.BookName != null) {
-            //    Session["BookName"] = model.BookName.ToString();
-            //}
-
-            //Session["BookCategoryId"] = model.BookCategoryId.ToString();
-
-            //Session["BookPublisherId"] = model.BookPublisherId.ToString();
-
-            //Session["PageNumber"] = model.PageNumber.ToString();
-
-            //Session["PageSize"] = model.PageSize.ToString();
-
-            //BooksViewModel bb = new BooksViewModel();
-            //bb = model;
-
             Session["PrevData"] = model;
-           
+
             Books bookObj = new Books();
             bookObj.BookName = model.BookName;
             bookObj.BookCategoryId = model.BookCategoryId;
@@ -107,5 +100,26 @@ namespace DemoWebApplication.Controllers {
         }
 
 
+        public ActionResult EditBook(Books books) {
+
+            Books bookObj = new Books();
+            BooksViewModel booksViewModelObj = new BooksViewModel();
+            if (books.BookId > 0) {
+                bookObj.BookId = books.BookId;
+                if (bookObj.Load()) {
+                    booksViewModelObj.BookId = bookObj.BookId;
+                    booksViewModelObj.BookName = bookObj.BookName;
+                    booksViewModelObj.BookCategoryId = bookObj.BookCategoryId;
+                    booksViewModelObj.BookCategoryName = bookObj.BookCategoryName;
+                    booksViewModelObj.BookPublisherId = bookObj.BookPublisherId;
+                    booksViewModelObj.BookPublisherName = bookObj.BookPublisherName;
+                    booksViewModelObj.BookQuantity = bookObj.BookQuantity;
+                }
+            }
+            booksViewModelObj.BooksPublicationsList = new Books().BookPublicationsGetList();
+            booksViewModelObj.BooksCategoriesList = new Books().BookCategoriesGetList();
+
+            return RedirectToAction("AddBook",booksViewModelObj);
+        }
     }
 }

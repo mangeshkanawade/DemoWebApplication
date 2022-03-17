@@ -1,0 +1,71 @@
+﻿@using DemoWebApplication.Models
+@model BooksViewModel
+
+<div class="modal fade" id="x" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            @*<form class="form-control-static" id="addBookForm" method="post">*@
+
+            @using (Ajax.BeginForm("AddBook", "Books", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "#nm", OnSuccess = "successCall()", OnFailure = "failCall()", OnComplete = "SearchBtnClick()" })) {
+
+                <div class="modal-header">
+                    <h2 class="modal-title" id="exampleModalLabel">Update Book</h2>
+                    <button id="closeBtn" type="button" class="close" onclick="this.form.reset()" data-dismiss="modal" aria-labe l="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div id="msgPopup"></div>
+
+
+                    @Html.HiddenFor(
+                                model => model.BookId)
+                    <b>Name : </b>
+                    @Html.TextBoxFor(
+                          model => model.BookName,
+                          null,
+                          new { @class = "form-control", @placeholder = "Enter Book Name " })
+
+                    @Html.ValidationMessageFor(model => model.BookName, null, new { @class = "text-danger" })<br />
+                    <b>Cateogry : </b>
+                    @Html.DropDownListFor(
+                             model => model.BookCategoryId,
+                             new SelectList(Model.BooksCategoriesList, "BookCategoryId", "BookCategoryName"),
+                             "Select Cateogry", new { @class = "form-control" })
+
+                    @Html.ValidationMessageFor(model => model.BookCategoryId, null, new { @class = "text-danger" })<br />
+                    <b>Publication : </b>
+                    @Html.DropDownListFor(
+                             model => model.BookPublisherId,
+                             new SelectList(Model.BooksPublicationsList, "BookPublisherId", "BookPublisherName"),
+                             "Select Publisher", new { @class = "form-control" })
+
+                    @Html.ValidationMessageFor(model => model.BookPublisherId, null, new { @class = "text-danger" })<br />
+                    <b>Quantity : </b>
+                    @Html.TextBoxFor(
+                             model => model.BookQuantity,
+                             null,
+                             new { @type = "number", @class = "form-control", @placeholder = "Enter Book Quantity " }
+                             )
+                    @Html.ValidationMessageFor(model => model.BookQuantity, null, new { @class = "text-danger" })<br />
+
+
+                    @Html.CheckBox(
+                        "IsActive", true,
+                        new { @class = "checkbox-inline" }) <label class="checkbox-inline"><b>Is Active</b></label>
+
+                    <br />
+                    <br />
+                </div>
+                <div class="modal-footer">
+                    <button id="fsubmit" type="submit" class="btn btn-success"> Add Book </button>
+                    <button id="freset" type="reset" class="btn btn-danger"> Clear Form </button>
+
+                </div>
+            }
+            @*</form>*@
+        </div>
+    </div>
+</div>

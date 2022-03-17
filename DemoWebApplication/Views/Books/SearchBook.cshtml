@@ -5,6 +5,11 @@
 }
 <head>
     <script src="~/Scripts/jquery-3.6.0.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+
 </head>
 <h2>SearchBook</h2>
 
@@ -13,6 +18,7 @@
 </label>
 <div class="container">
     <form id="searchForm" class="form-inline" method="post">
+
         @{
             @Html.TextBoxFor(
      model => model.BookName,
@@ -36,9 +42,11 @@
 
             <input id="submitBtn" type="button" value="Search" class="btn btn-success" />
 
-            @*<input id="resetBtn" type="reset" value="Clear Form" class="btn btn-danger" />*@
             <a class="btn btn-danger" href="SearchBook">Clear Form</a>
             <a class="btn btn-info" href="AddBook">Add Book</a>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                Add Book (new)
+            </button>
             <br />
             <br />
             <b class="text-info">Page Size : </b>
@@ -47,7 +55,8 @@
     new List<SelectListItem> {
                new SelectListItem { Text = "3", Value = "3" },
                new SelectListItem { Text = "5", Value = "5" },
-               new SelectListItem { Text = "10", Value = "10" } },
+               new SelectListItem { Text = "10", Value = "10" },
+               new SelectListItem { Text = "100", Value = "100" }},
     new { @class = "form-control" })
 
             <br />
@@ -60,25 +69,92 @@
         </div>
     </form>
 </div>
-@*@{
-    <b>@Session["BookName"]</b>
-    <b>@Session["BookCategoryId"]</b>
-    <b>@Session["BookPublisherId"]</b>
-    <b>@Session["PageNumber"]</b>
-    <b>@Session["PageSize"]</b>
 
-}*@
+
+<!-- Modal -->
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <form id="popupAddBookForm" class="form-inline" method="post">
+
+                @using (Ajax.BeginForm("AddBook", "Books", new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "#tb", OnSuccess = "successCall()", OnFailure = "failCall", OnComplete = "SearchBtnClick()" })) {
+
+                    <div class="modal-header">
+                        <h2 class="modal-title" id="exampleModalLabel">Add Book</h2>
+                        <button id="closeBtn" type="button" class="close" onclick="this.form.reset()" data-dismiss="modal" aria-labe l="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <div id="msgPopup"></div>
+
+
+                        @Html.HiddenFor(
+                                    model => model.BookId)
+                        <b>Name : </b>
+                        @Html.TextBoxFor(
+                              model => model.BookName,
+                              null,
+                              new { @class = "form-control", @placeholder = "Enter Book Name " })
+
+                        @Html.ValidationMessageFor(model => model.BookName, null, new { @class = "text-danger" })<br />
+                        <b>Cateogry : </b>
+                        @Html.DropDownListFor(
+                                 model => model.BookCategoryId,
+                                 new SelectList(Model.BooksCategoriesList, "BookCategoryId", "BookCategoryName"),
+                                 "Select Cateogry", new { @class = "form-control" })
+
+                        @Html.ValidationMessageFor(model => model.BookCategoryId, null, new { @class = "text-danger" })<br />
+                        <b>Publication : </b>
+                        @Html.DropDownListFor(
+                                 model => model.BookPublisherId,
+                                 new SelectList(Model.BooksPublicationsList, "BookPublisherId", "BookPublisherName"),
+                                 "Select Publisher", new { @class = "form-control" })
+
+                        @Html.ValidationMessageFor(model => model.BookPublisherId, null, new { @class = "text-danger" })<br />
+                        <b>Quantity : </b>
+                        @Html.TextBoxFor(
+                                 model => model.BookQuantity,
+                                 null,
+                                 new { @type = "number", @class = "form-control", @placeholder = "Enter Book Quantity " }
+                                 )
+                        @Html.ValidationMessageFor(model => model.BookQuantity, null, new { @class = "text-danger" })<br />
+
+
+                        @Html.CheckBox(
+                            "IsActive", true,
+                            new { @class = "checkbox-inline" }) <label class="checkbox-inline"><b>Is Active</b></label>
+
+                        <br />
+                        <br />
+                    </div>
+                    <div class="modal-footer">
+                        <button id="fsubmit" type="submit" class="btn btn-success"> Add Book </button>
+                        <button id="freset" type="reset" class="btn btn-danger"> Clear Form </button>
+                    </div>
+                }
+                </form>
+        </div>
+    </div>
+</div>
+
+
 <script>
-    $(document).ready(function () {
-        debugger;
+    $(document).ready(function () {    
         SearchBtnClick();
-
-        $('ul').on('click', 'li', function () {
-            $(this).addClass('active');
-        });
 
         $("#submitBtn").click(function () {
             $("#PageNumber").val(1);
+            SearchBtnClick();
+        });
+
+        $("#fsubmit").click(function () {
+            SearchBtnClick();
+        });
+        $("#closeBtn").click(function () {
             SearchBtnClick();
         });
 
@@ -93,11 +169,19 @@
             SearchBtnClick();
         });
 
+        $("body").on("click", "#first", function () {
+            var currentPage = $("#PageNumber").val(1);
+            $("#PageNumber").val(currentPage);
+            SearchBtnClick();
+        });
+
         $("body").on("click", "#next", function () {
             var currentPage = $("#PageNumber").val();
             $("#PageNumber").val(++currentPage);
             SearchBtnClick();
         });
+
+
 
         $("#PageSize").change(function () {
             $("#PageNumber").val(1);
@@ -121,6 +205,51 @@
                     $("#partial").html(data);
                 }
             });
+        }
+
+
+
+        // for Add Book
+
+        $("#addBookBtn").click(function () {
+            var form = $("#addBookForm");
+            form.validate();
+            if (form.valid()) {
+                AddBook();
+            }
+        });
+
+        function AddBook() {
+            $.ajax({
+                url: "/Books/AddBook",
+                method: "POST",
+                data: $("#addBookForm").serialize(),
+                success: function (data) {
+                    console.log('in Success ' + data.BookId);
+                    var msg = '<div class="alert alert-success"><strong> Success ! </strong> Book <strong>' + data.BookName + '</strong> Added Successfully.';
+                    $("#msgPopup").html(msg);
+                    $("#addBookForm")[0].reset();
+
+                },
+                error: function (data) {
+                    var msg = '<div class="alert alert-danger"><strong> Fail! </strong> Add Book Error';
+                    $("#msgPopup").html(msg);
+                }
+            });
+        }
+
+        function successCall() {
+            console.log("in On Success Fun");
+            alert("dfgh");
+            var msg = '<div class="alert alert-success"><strong> Success ! </strong> Book <strong>' + data.BookName + '</strong> Added Successfully.';
+            $("#msgPopup").html(msg);
+        }
+
+        function failCall() {
+            console.log("in On Fail Fun");
+            alert("dfgfghjykuli;oh");
+            var msg = '<div class="alert alert-danger"><strong> Success ! </strong> Book <strong>' + data.BookName + '</strong> Added Successfully.';
+            $("#msgPopup").html(msg);
         }
     });
 </script>

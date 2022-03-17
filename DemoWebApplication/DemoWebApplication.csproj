@@ -186,6 +186,7 @@
     <Content Include="Views\Books\SearchBook.cshtml" />
     <Content Include="Views\Books\AddBook.cshtml" />
     <Content Include="Views\Shared\_BookList.cshtml" />
+    <Content Include="Views\Shared\_AddBook.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
