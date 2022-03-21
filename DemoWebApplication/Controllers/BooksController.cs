@@ -51,8 +51,6 @@ namespace DemoWebApplication.Controllers {
         [HttpGet]
         public ActionResult SearchBook(Books books) {
 
-
-
             BooksViewModel booksViewModelObj = new BooksViewModel();
             BooksViewModel bb = (BooksViewModel)Session["PrevData"];
             if (bb != null) {
@@ -60,23 +58,7 @@ namespace DemoWebApplication.Controllers {
             }
             booksViewModelObj.BooksPublicationsList = new Books().BookPublicationsGetList();
             booksViewModelObj.BooksCategoriesList = new Books().BookCategoriesGetList();
-
-            Session["PrevData"] = null;
-
-            Books bookObj = new Books();
-            if (books.BookId > 0) {
-                bookObj.BookId = books.BookId;
-                if (bookObj.Load()) {
-                    booksViewModelObj.BookId = bookObj.BookId;
-                    booksViewModelObj.BookName = bookObj.BookName;
-                    booksViewModelObj.BookCategoryId = bookObj.BookCategoryId;
-                    booksViewModelObj.BookCategoryName = bookObj.BookCategoryName;
-                    booksViewModelObj.BookPublisherId = bookObj.BookPublisherId;
-                    booksViewModelObj.BookPublisherName = bookObj.BookPublisherName;
-                    booksViewModelObj.BookQuantity = bookObj.BookQuantity;
-                }
-            }
-
+            Session["PrevData"] = null;          
             return View(booksViewModelObj);
         }
         [HttpPost]
@@ -114,12 +96,10 @@ namespace DemoWebApplication.Controllers {
                     booksViewModelObj.BookPublisherId = bookObj.BookPublisherId;
                     booksViewModelObj.BookPublisherName = bookObj.BookPublisherName;
                     booksViewModelObj.BookQuantity = bookObj.BookQuantity;
+                    booksViewModelObj.IsActive = bookObj.IsActive;
                 }
             }
-            booksViewModelObj.BooksPublicationsList = new Books().BookPublicationsGetList();
-            booksViewModelObj.BooksCategoriesList = new Books().BookCategoriesGetList();
-
-            return RedirectToAction("AddBook",booksViewModelObj);
+            return Json(booksViewModelObj, JsonRequestBehavior.AllowGet);
         }
     }
 }

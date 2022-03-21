@@ -35,6 +35,12 @@
         }
     }
 
+    <style>
+        th, td {
+            text-align:center;
+        }
+    </style>
+
     @if (Model.TotalRecords != 0) {
         <div id="dv">
             <table class="table" id="tbl">
@@ -58,10 +64,9 @@
                                     <td>@Data.BookCategoryName</td>
                                     <td>@Data.BookQuantity</td>
                                     <td>
-                                        @Html.ActionLink(" Edit", "AddBook", new { BookId = Data.BookId }, new { @class = "glyphicon glyphicon-edit" })
-                                        @*<button type="button" class="btn btn-primary" data-toggle="ajax-modal" data-target="#EditBookModal" data-url="@Url.Action("EditBook","Books", new { BookId = Data.BookId })">
-                                                Edit Book (new)
-                                            </button>*@
+                                        <button value="@Data.BookId" id="editClick" class="btn btn-info">
+                                            <span class="glyphicon glyphicon-edit"></span> Edit
+                                        </button>                                       
                                     </td>
                                 </tr>
                             }
@@ -110,3 +115,31 @@
         </ul>
     </footer>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $("#tb").on("click", "#editClick", function () {
+            var id = $(this).val();
+
+            btnClick(id);
+        });
+    });
+    function btnClick(id) {
+
+        $.ajax({
+            url: "/Books/EditBook",
+            method: "GET",
+            data: { BookId: id },
+            success: function (data) {
+                $("#BookId").val(data.BookId);
+                $("#SearchBookName").val(data.BookName );
+                $("#SearchBookCategory").val(data.BookCategoryId);
+                $("#SearchBookPublication").val(data.BookPublisherId);
+                $("#SearchBookQuantity").val(data.BookQuantity);     
+                $("#IsActive").attr("checked", data.IsActive);
+                $('#exampleModal').modal('show');
+            }
+        });
+        stopImmediatePropagation();
+    }
+</script>
