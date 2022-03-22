@@ -58,7 +58,7 @@ namespace DemoWebApplication.Controllers {
             }
             booksViewModelObj.BooksPublicationsList = new Books().BookPublicationsGetList();
             booksViewModelObj.BooksCategoriesList = new Books().BookCategoriesGetList();
-            Session["PrevData"] = null;          
+            Session["PrevData"] = null;
             return View(booksViewModelObj);
         }
         [HttpPost]
@@ -100,6 +100,19 @@ namespace DemoWebApplication.Controllers {
                 }
             }
             return Json(booksViewModelObj, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult DeleteBook(Books book) {
+            Books bookObj = new Books();
+            if (book.BookId > 0) { 
+                bookObj.BookId = book.BookId;
+                bookObj.BookName = book.BookName;
+                if (bookObj.Delete()) {
+                    bookObj.BookName = book.BookName;
+                }
+            }
+            return Json(bookObj, JsonRequestBehavior.AllowGet);
         }
     }
 }

@@ -66,7 +66,11 @@
                                     <td>
                                         <button value="@Data.BookId" id="editClick" class="btn btn-info">
                                             <span class="glyphicon glyphicon-edit"></span> Edit
-                                        </button>                                       
+                                        </button>
+                                        |
+                                        <button value="@Data.BookId" id="deleteClick" class="btn btn-danger">
+                                            <span class="glyphicon glyphicon-trash"></span> Delete
+                                        </button>
                                     </td>
                                 </tr>
                             }
@@ -115,16 +119,20 @@
         </ul>
     </footer>
 </div>
-
+<script src="~/Scripts/bootstrap.js"></script>
 <script>
     $(document).ready(function () {
         $("#tb").on("click", "#editClick", function () {
             var id = $(this).val();
+            editBtnClick(id);
+        });
 
-            btnClick(id);
+        $("#tb").on("click", "#deleteClick", function () {
+            var id = $(this).val();
+            deleteBtnClick(id);
         });
     });
-    function btnClick(id) {
+    function editBtnClick(id) {
 
         $.ajax({
             url: "/Books/EditBook",
@@ -140,6 +148,23 @@
                 $('#exampleModal').modal('show');
             }
         });
-        stopImmediatePropagation();
+        //stopImmediatePropagation();
     }
+
+    function deleteBtnClick(id) {        
+        $.ajax({
+            url: "/Books/EditBook",
+            method: "GET",
+            data: { BookId: id },
+            success: function (data) {
+                console.log(data.BookName);
+                $("#deleteBookId").val(data.BookId);
+                $("#deleteBookName").val(data.BookName);
+                $("#deleteBooklbl").text(data.BookName);
+                $('#deleteBookModal').modal('show');
+            }
+        });
+        //stopImmediatePropagation();
+    }
+
 </script>

@@ -41,10 +41,16 @@ new { @class = "form-control" })
 
             <input id="submitBtn" type="button" value="Search" class="btn btn-success" />
 
-            <a class="btn btn-danger" href="SearchBook">Clear Form</a>
-            <a class="btn btn-info" href="AddBook">Add Book</a>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-                Add Book (new)
+            @*<a class="btn btn-danger" href="SearchBook">Clear Form</a>*@
+            <button type="reset" id="serarchReset" class="btn btn-danger">
+                Clear Form
+            </button>
+            @*<a class="btn btn-info" href="AddBook">Add Book</a>*@
+
+            //this button for showing add book pop up
+
+            <button type="button" id="AddBookNewBtn" class="btn btn-primary">
+                Add Book
             </button>
             <br />
             <br />
@@ -70,9 +76,7 @@ new { @class = "form-control" })
 </div>
 
 
-<!-- Modal -->
-
-
+<!-- Add And Edit Book Modal -->
 <form id="popupAddBookForm" class="form-inline" method="post">
 
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -122,7 +126,7 @@ new { @class = "form-control" })
 
                     @Html.CheckBox(
                         "IsActive",
-                        new {@class = "checkbox-inline" }) <label class="checkbox-inline"><b>Is Active</b></label>
+                        new { @class = "checkbox-inline" }) <label class="checkbox-inline"><b>Is Active</b></label>
 
                     <br />
                     <br />
@@ -137,6 +141,35 @@ new { @class = "form-control" })
     </div>
 </form>
 
+
+<!-- Delete Book Modal -->
+
+
+    <div class="modal fade" id="deleteBookModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="exampleModalLabel">Delete Book</h2>
+                    <button type="button" id="DelCloseBtn" class="close" onclick="this.form.reset()" data-dismiss="modal" aria-labe l="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="popupDeleteBookForm" class="form-inline" method="post">
+                    <div class="modal-body">
+                        <div id="DeleteMsgPopup"></div>
+                        @Html.HiddenFor(model => model.BookId, new { @id = "deleteBookId" })
+                        @Html.HiddenFor(model => model.BookName, new { @id = "deleteBookName" })
+
+                        <h3 id="ConfirmMsg" class="card-subtitle">Are you sure?<br />You want to Delete <label id="deleteBooklbl"> </label> Book </h3>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="btnCancelDelete" class="btn btn-secondary" onclick="this.form.reset()" data-dismiss="modal">Cancel</button>
+                        <button type="button" id="btnDelete" class="btn btn-primary">Delete Book</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 
 <script>
@@ -157,9 +190,19 @@ new { @class = "form-control" })
             SearchBtnClick();
         });
 
+        $("#AddBookNewBtn").click(function () {
+            $('#exampleModal').modal('show');
+        });
+
         $("#freset").click(function () {
             $("#msgPopup").html('');
             this.form.reset();
+        });
+
+        $("#serarchReset").click(function () {
+            this.form.reset();
+            $("#PageNumber").val(1);
+            SearchBtnClick();
         });
 
         $("body").on("click", "#SelectedPage", function () {
@@ -219,18 +262,13 @@ new { @class = "form-control" })
 
 
         function AddBook() {
-            $("#exampleModalLabel").text("Add Book");
             $.ajax({
                 url: "/Books/AddBook",
                 method: "POST",
                 data: $("#popupAddBookForm").serialize(),
                 success: function (data) {
-
-                    console.log('in Success ' + data.BookId);
                     var msg = '<div class="alert alert-success"><strong> Success ! </strong> Book <strong>' + data.BookName + '</strong> Added Successfully.';
                     $("#msgPopup").html(msg);
-                    $("#addBookForm")[0].reset();
-
                 },
                 error: function (data) {
                     var msg = '<div class="alert alert-danger"><strong> Fail! </strong> Add Book Error';
@@ -239,5 +277,46 @@ new { @class = "form-control" })
             });
             stopImmediatePropagation();
         }
+
+
+        // For Delete BOOK
+
+        $("body").on("click", "#btnDelete", function () {          
+            DeleteBook();
+        });
+
+        $("#DelCloseBtn").click(function () {
+            $("#DeleteMsgPopup").html('');
+            
+            SearchBtnClick();
+            $("#ConfirmMsg").show();
+        });
+
+        $("#btnCancelDelete").click(function () {
+            $("#DeleteMsgPopup").html('');
+            SearchBtnClick();
+            $("#ConfirmMsg").show();
+            
+        });
+
+        function DeleteBook() {
+            $.ajax({
+                url: "/Books/DeleteBook",
+                method: "POST",
+                data: $("#popupDeleteBookForm").serialize(),
+                success: function (data) {
+                    $("#ConfirmMsg").hide();
+                    var msg = '<div class="alert alert-danger"><strong> Success ! </strong> Book <strong>' + data.BookName + '</strong> Deleted Successfully.';
+                    $("#DeleteMsgPopup").html(msg);                   
+
+                },
+                error: function (data) {
+                   
+                }
+            });
+            stopImmediatePropagation();
+        }
+
+
     });
 </script>
